@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#087f5b">
+  <title>星光 · 任务控制台</title>
+  <link rel="icon" type="image/png" href="brand.png">
+  <link rel="stylesheet" href="app.css">
+  <link rel="stylesheet" href="image-review.css">
+  <link rel="stylesheet" href="ai-windows.css">
+  <link rel="stylesheet" href="pacing.css">
+  <link rel="stylesheet" href="mobile.css">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <button type="button" id="toggle-sidebar" class="icon-button ghost mobile-menu" aria-label="切换侧边栏" aria-expanded="false" aria-controls="sidebar"><i data-lucide="menu"></i></button>
+      <a class="brand" href="./" aria-label="星光首页"><img src="brand.png" alt="" width="30" height="30"><span>星光<span class="brand-divider">/</span><small>任务控制台</small></span></a>
+      <nav class="global-nav" aria-label="主导航">
+        <button type="button" id="workspace-nav" aria-pressed="true">工作台</button>
+        <button type="button" id="service-nav" aria-pressed="false" data-owner-only hidden>服务管理</button>
+      </nav>
+      <span class="topbar-caption">服务工作空间</span>
+      <div class="session-user"><span id="session-user-name">读取中</span><button type="button" id="change-password" class="ghost compact">修改密码</button><button type="button" id="logout" class="ghost compact">退出</button></div>
+    </header>
+    <button type="button" id="sidebar-mask" class="sidebar-mask" aria-label="关闭侧边栏" hidden></button>
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-service"><span>当前服务</span><strong>课程任务管理</strong><small>星舟控制台</small></div>
+      <p class="nav-caption" id="sidebar-category">工作台</p>
+      <nav class="tabs" id="workspace-menu" role="tablist" aria-label="工作台">
+        <button type="button" id="overview-tab" role="tab" aria-selected="true" aria-controls="overview-view">
+          <i data-lucide="layout-dashboard"></i><span>系统总览</span>
+        </button>
+        <button type="button" id="tasks-tab" role="tab" aria-selected="false" aria-controls="tasks-view">
+          <i data-lucide="list-checks"></i><span>课程任务</span>
+        </button>
+        <button type="button" id="archived-tab" role="tab" aria-selected="false" aria-controls="archived-view">
+          <i data-lucide="archive"></i><span>任务归档</span>
+        </button>
+        <button type="button" id="accounts-tab" role="tab" aria-selected="false" aria-controls="accounts-view">
+          <i data-lucide="users-round"></i><span>账号管理</span>
+        </button>
+        <button type="button" id="bank-tab" role="tab" aria-selected="false" aria-controls="bank-view" data-owner-only hidden>
+          <i data-lucide="library-big"></i><span>共享题库</span>
+        </button>
+        <button type="button" id="images-tab" role="tab" aria-selected="false" aria-controls="images-view" data-owner-only hidden>
+          <i data-lucide="images"></i><span>图片题核对</span>
+        </button>
+        <button type="button" id="ai-windows-tab" role="tab" aria-selected="false" aria-controls="ai-windows-view" data-owner-only hidden>
+          <i data-lucide="panels-top-left"></i><span>AI 窗口</span>
+        </button>
+        <button type="button" id="ai-chat-tab" role="tab" aria-selected="false" aria-controls="ai-chat-view" data-owner-only hidden>
+          <i data-lucide="messages-square"></i><span>AI 对话</span>
+        </button>
+        <button type="button" id="notes-tab" role="tab" aria-selected="false" aria-controls="notes-view" data-owner-only hidden>
+          <i data-lucide="notebook-pen"></i><span>工作事项</span>
+        </button>
+        <button type="button" id="pacing-tab" role="tab" aria-selected="false" aria-controls="pacing-view" data-owner-only hidden>
+          <i data-lucide="coffee"></i><span>拟人节奏</span>
+        </button>
+      </nav>
+      <nav class="tabs" id="service-menu" role="tablist" aria-label="服务管理" hidden>
+        <button type="button" id="connection-tab" role="tab" aria-selected="false" aria-controls="connection-view"><i data-lucide="plug-zap"></i><span>连接设置</span></button>
+        <button type="button" id="storage-tab" role="tab" aria-selected="false" aria-controls="storage-view"><i data-lucide="database"></i><span>数据存储</span></button>
+        <button type="button" id="users-tab" role="tab" aria-selected="false" aria-controls="users-view" data-owner-only hidden><i data-lucide="user-cog"></i><span>用户管理</span></button>
+      </nav>
+      <div class="sidebar-bottom">
+        <div class="storage-indicator"><i data-lucide="database"></i><span id="console-storage">正在读取存储状态</span></div>
+        <span class="sidebar-version">星光 / 服务控制台</span>
+        <div class="sidebar-session">
+          <span id="sidebar-user-name">读取中</span>
+          <div class="actions">
+            <button type="button" id="sidebar-change-password" class="ghost compact">修改密码</button>
+            <button type="button" id="sidebar-logout" class="ghost compact">退出登录</button>
+          </div>
+        </div>
+      </div>
+    </aside>
+    <main>
+      <header class="workspace-header">
+        <div class="page-heading">
+          <p class="eyebrow">任务控制台 <span>/</span> <span id="view-category">工作台</span></p>
+          <h1 id="view-title">课程任务</h1>
+        </div>
+        <div class="header-actions">
+          <span id="sync-status" class="sync-label"><span class="status-dot"></span><span id="sync-message">等待连接</span></span>
+          <span id="count" class="count">0 个任务</span>
+          <button type="button" id="open-connection" class="icon-button ghost" title="连接设置" aria-label="连接设置" data-owner-only hidden><i data-lucide="settings-2"></i></button>
+        </div>
+      </header>
+      <p id="backend-error" class="error" role="alert" hidden></p>
+      <section id="overview-view" role="tabpanel" aria-labelledby="overview-tab">
+        <div class="status-line"><p id="backend-status" class="connection-status" role="status">未连接</p><span id="last-sync" class="muted">尚未同步</span></div>
+        <section class="summary-band" id="dashboard-summary" aria-label="服务概览">
+          <div class="summary-metric"><span class="metric-label"><i data-lucide="activity"></i>正在运行</span><strong id="metric-running">0</strong><span id="metric-capacity" class="metric-note">等待服务状态</span></div>
+          <div class="summary-metric"><span class="metric-label"><i data-lucide="list-ordered"></i>等待执行</span><strong id="metric-queued">0</strong><span class="metric-note">队列任务</span></div>
+          <div class="summary-metric"><span class="metric-label"><i data-lucide="bot"></i>AI 请求</span><strong id="metric-ai">0</strong><span id="metric-ai-status" class="metric-note">等待服务状态</span></div>
+          <div class="summary-metric"><span class="metric-label"><i data-lucide="circle-alert"></i>待处理</span><strong id="metric-pending">0</strong><span id="metric-attention" class="metric-note">暂无待处理任务</span></div>
+        </section>
+        <div class="overview-toolbar">
+          <div><h2>服务状态</h2><p>刷课后端与 AI 答题工作线程</p></div>
+          <button type="button" id="overview-refresh" class="ghost icon-button" title="刷新状态" aria-label="刷新状态" disabled><i data-lucide="refresh-cw"></i></button>
+        </div>
+        <section class="overview-health" aria-label="服务在线状态">
+          <div class="service-health-row">
+            <span class="service-health-icon"><i data-lucide="server"></i></span>
+            <div class="service-health-copy"><h3>刷课后端</h3><p id="overview-backend-note">等待连接</p></div>
+            <span id="overview-backend-state" class="health-state" data-state="unknown">待连接</span>
+          </div>
+          <div class="service-health-row">
+            <span class="service-health-icon"><i data-lucide="bot"></i></span>
+            <div class="service-health-copy"><h3>AI 答题</h3><p id="overview-ai-note">等待后端状态</p></div>
+            <span id="overview-ai-state" class="health-state" data-state="unknown">待确认</span>
+          </div>
+        </section>
+        <section class="resource-section" aria-labelledby="resources-heading">
+          <div class="overview-toolbar">
+            <div><h2 id="resources-heading">服务器资源</h2><p id="resource-host">后端所在服务器</p></div>
+            <div class="insight-actions"><span id="resource-status" class="muted" role="status">等待连接</span><button type="button" id="resource-refresh" class="ghost icon-button" title="刷新资源" aria-label="刷新资源" disabled><i data-lucide="refresh-cw"></i></button></div>
+          </div>
+          <p id="resource-error" class="error" role="alert" hidden></p>
+          <div class="resource-grid">
+            <div class="resource-metric" data-tone="blue">
+              <span class="metric-label"><i data-lucide="cpu"></i>CPU</span>
+              <div id="resource-cpu-bar" class="resource-ring" role="progressbar" aria-label="CPU 使用率" aria-valuemin="0" aria-valuemax="100" aria-valuetext="暂无数据" data-state="unknown"><strong id="resource-cpu" aria-hidden="true">--</strong></div>
+              <span id="resource-cpu-note" class="metric-note">等待采样</span>
+            </div>
+            <div class="resource-metric">
+              <span class="metric-label"><i data-lucide="memory-stick"></i>内存</span>
+              <div id="resource-memory-bar" class="resource-ring" role="progressbar" aria-label="内存使用率" aria-valuemin="0" aria-valuemax="100" aria-valuetext="暂无数据" data-state="unknown"><strong id="resource-memory" aria-hidden="true">--</strong></div>
+              <span id="resource-memory-note" class="metric-note">--</span>
+            </div>
+            <div class="resource-metric" data-tone="amber">
+              <span class="metric-label"><i data-lucide="hard-drive"></i>系统盘</span>
+              <div id="resource-system-bar" class="resource-ring" role="progressbar" aria-label="系统盘使用率" aria-valuemin="0" aria-valuemax="100" aria-valuetext="暂无数据" data-state="unknown"><strong id="resource-system" aria-hidden="true">--</strong></div>
+              <span id="resource-system-note" class="metric-note">--</span><span id="resource-system-detail" class="metric-note resource-disk-detail">--</span>
+            </div>
+            <div class="resource-metric" data-tone="rose">
+              <span class="metric-label"><i data-lucide="database"></i><span id="resource-disk-label">数据盘</span></span>
+              <div id="resource-disk-bar" class="resource-ring" role="progressbar" aria-label="数据盘使用率" aria-valuemin="0" aria-valuemax="100" aria-valuetext="暂无数据" data-state="unknown"><strong id="resource-disk" aria-hidden="true">--</strong></div>
+              <span id="resource-disk-note" class="metric-note">--</span><span id="resource-disk-detail" class="metric-note resource-disk-detail">--</span>
+            </div>
+          </div>
+          <div class="resource-data-location"><span class="metric-label"><i data-lucide="folder-open"></i>业务数据位置</span><code id="resource-data-path">--</code></div>
+          <div class="resource-network-row"><span class="metric-label"><i data-lucide="network"></i>网络下行</span><strong id="resource-network">--</strong><span id="resource-network-note" class="metric-note">--</span><span id="resource-network-total" class="metric-note">--</span></div>
+          <dl class="resource-facts"><div><dt>运行时间</dt><dd id="resource-uptime">--</dd></div><div><dt>后端进程内存</dt><dd id="resource-process">--</dd></div><div><dt>交换空间</dt><dd id="resource-swap">--</dd></div><div><dt>平均负载 1 / 5 / 15 分钟</dt><dd id="resource-load">--</dd></div></dl>
+        </section>
+        <section class="bank-overview" aria-labelledby="bank-overview-heading">
+          <div class="overview-toolbar"><div><h2 id="bank-overview-heading">共享题库</h2><p id="bank-overview-note">等待题库统计</p></div><button type="button" id="overview-open-bank" class="ghost compact"><i data-lucide="library-big"></i>查看题库</button></div>
+          <div class="bank-overview-values"><div><span>已入库题目</span><strong id="overview-bank-entries">--</strong></div><div><span>题库命中</span><strong id="overview-bank-hits">--</strong></div><div><span>题库内容占用</span><strong id="overview-bank-content">--</strong></div><div><span>后端数据库含 WAL</span><strong id="overview-bank-database">--</strong></div></div>
+        </section>
+        <section class="overview-jobs-section">
+          <div class="overview-jobs-heading">
+            <div><h2>课程任务</h2><p id="overview-jobs-summary">等待任务状态</p></div>
+            <button type="button" id="overview-open-tasks" class="ghost compact"><i data-lucide="list"></i>查看任务</button>
+          </div>
+          <ul id="overview-jobs" class="overview-jobs" aria-label="课程任务状态" aria-live="polite"></ul>
+          <div id="overview-jobs-empty" class="empty-state" hidden><i data-lucide="inbox"></i><h3>暂无课程任务</h3><p>当前没有运行中或待处理的任务</p></div>
+        </section>
+      </section>
+      <section id="tasks-view" role="tabpanel" aria-labelledby="tasks-tab" hidden>
+        <div id="connection-home">
+        <details id="connection-panel" class="connection-panel" open>
+          <summary><span>服务连接</span><i data-lucide="chevron-down"></i></summary>
+          <form id="connection-form" autocomplete="off">
+            <label>服务地址<input id="backend-url" type="url" required placeholder="http://127.0.0.1:3100"></label>
+            <label>访问令牌<input id="backend-token" type="password" autocomplete="new-password" placeholder="访问令牌"></label>
+            <div class="actions">
+              <button type="submit"><i data-lucide="plug-zap"></i>连接</button>
+              <button type="button" id="disconnect-backend" class="ghost"><i data-lucide="unplug"></i>断开</button>
+            </div>
+          </form>
+        </details>
+        </div>
+        <section class="jobs-pane">
+          <div class="section-heading jobs-heading"><h2><i data-lucide="radio-tower"></i>任务运行</h2><div class="actions"><button type="button" id="open-job-batch" class="ghost" aria-haspopup="dialog" aria-controls="job-batch-dialog" disabled><i data-lucide="list-checks"></i>批量操作</button><button type="button" id="add-job" aria-haspopup="dialog" aria-controls="job-dialog" disabled><i data-lucide="plus"></i>添加任务</button></div></div>
+          <div class="jobs-toolbar">
+            <div id="job-filters" class="segmented" role="group" aria-label="任务状态">
+              <button type="button" id="filter-all" aria-pressed="true">全部</button>
+              <button type="button" id="filter-active" aria-pressed="false">执行中</button>
+              <button type="button" id="filter-pacing" aria-pressed="false">拟人等待</button>
+              <button type="button" id="filter-attention" aria-pressed="false">待处理</button>
+              <button type="button" id="filter-finished" aria-pressed="false">已结束</button>
+            </div>
+            <label class="job-course-filter"><span>课程</span><select id="job-course-filter" aria-label="按课程筛选任务"><option value="">全部课程</option></select></label>
+            <label class="search-field"><i data-lucide="search"></i><input id="job-search" type="search" aria-label="搜索任务" placeholder="搜索账号、课程"></label>
+          </div>
+          <div class="job-selection-toolbar" aria-label="批量任务选择">
+            <label class="check-label"><input id="select-visible-jobs" type="checkbox" disabled>全选当前</label>
+            <span id="job-selection-count" class="selection-count" role="status">已选 0 项</span>
+            <div class="actions">
+              <button type="button" id="clear-job-selection" class="ghost icon-button compact" title="清除任务选择" aria-label="清除任务选择" disabled><i data-lucide="list-x"></i></button>
+              <button type="button" id="quick-resume-jobs" class="ghost compact" aria-haspopup="dialog" aria-controls="job-batch-dialog" disabled><i data-lucide="play"></i>开启</button>
+              <button type="button" id="quick-pause-jobs" class="ghost compact" aria-haspopup="dialog" aria-controls="job-batch-dialog" disabled><i data-lucide="pause"></i>暂停</button>
+            </div>
+          </div>
+          <ul id="jobs" class="job-grid" aria-label="课程任务"></ul>
+          <div id="jobs-empty" class="empty-state" hidden><i data-lucide="inbox"></i><h3>暂无课程任务</h3><p>等待任务记录</p></div>
+        </section>
+      </section>
+      <section id="archived-view" role="tabpanel" aria-labelledby="archived-tab" hidden>
+        <section class="jobs-pane">
+          <div class="section-heading jobs-heading">
+            <div><h2><i data-lucide="archive"></i>任务归档</h2><p id="archived-summary">已归档任务保留完整记录，可随时恢复</p></div>
+            <button type="button" id="archived-refresh" class="ghost icon-button" title="刷新归档" aria-label="刷新归档" disabled><i data-lucide="refresh-cw"></i></button>
+          </div>
+          <div class="jobs-toolbar">
+            <label class="search-field"><i data-lucide="search"></i><input id="archived-search" type="search" aria-label="搜索归档任务" placeholder="搜索账号、课程"></label>
+          </div>
+          <p id="archived-error" class="error" role="alert" hidden></p>
+          <div id="archived-jobs" class="archive-groups" aria-label="按账号分组的已归档课程任务"></div>
+          <div id="archived-empty" class="empty-state" hidden><i data-lucide="archive"></i><h3>暂无归档任务</h3><p>已归档的已结束任务会显示在这里</p></div>
+        </section>
+      </section>
+      <dialog id="job-batch-dialog" class="bank-dialog job-batch-dialog" aria-labelledby="job-batch-title">
+        <header><h2 id="job-batch-title"><i data-lucide="list-checks"></i>批量操作</h2><button type="button" id="job-batch-close" class="ghost icon-button" title="关闭批量操作" aria-label="关闭批量操作"><i data-lucide="x"></i></button></header>
+        <form id="job-batch-form" aria-busy="false">
+          <div class="job-batch-body">
+            <div class="job-batch-filters">
+              <label>操作<select id="job-batch-action"><option value="resume">开启已暂停任务</option><option value="pause">暂停执行中任务</option><option value="retry">重试已结束任务</option><option value="cancel">取消任务</option><option value="archive">归档已结束任务</option><option value="delete">删除任务记录</option></select></label>
+              <label class="search-field"><i data-lucide="search"></i><input id="job-batch-search" type="search" aria-label="搜索批量任务" placeholder="搜索账号、课程"></label>
+            </div>
+            <p id="job-batch-note" class="job-batch-note"></p>
+            <div class="job-batch-selection"><label class="check-label"><input id="job-batch-select-all" type="checkbox">全选可操作</label><span id="job-batch-count" class="selection-count" role="status"></span><button type="button" id="job-batch-clear" class="ghost icon-button compact" title="清除批量选择" aria-label="清除批量选择"><i data-lucide="list-x"></i></button></div>
+            <ul id="job-batch-list" class="job-batch-list" aria-label="可批量操作的课程任务"></ul>
+            <p id="job-batch-empty" class="muted" hidden>没有匹配的任务</p>
+          </div>
+          <footer class="job-dialog-footer">
+            <p id="job-batch-result" class="job-batch-result" role="status" hidden></p>
+            <p id="job-batch-error" class="error" role="alert" hidden></p>
+            <label id="job-batch-confirm-label" class="check-label job-batch-confirm" hidden><input id="job-batch-confirm" type="checkbox"><span id="job-batch-confirm-text"></span></label>
+            <div class="actions"><button type="button" id="job-batch-cancel" class="ghost">关闭</button><button type="submit" id="job-batch-submit" disabled><i data-lucide="play"></i><span id="job-batch-submit-label">开启 0 项</span></button></div>
+          </footer>
+        </form>
+      </dialog>
+      <dialog id="job-dialog" class="bank-dialog job-dialog" aria-labelledby="job-editor-title">
+        <header><h2 id="job-editor-title"><i data-lucide="list-plus"></i>添加任务</h2><button type="button" id="job-editor-close" class="ghost icon-button" title="关闭添加任务" aria-label="关闭添加任务"><i data-lucide="x"></i></button></header>
+        <form id="job-form" aria-busy="false">
+          <div id="backend-controls" class="job-dialog-body" hidden>
+            <div class="job-account-tools">
+              <div class="course-account">
+                <div class="job-account-field">
+                  <label for="job-account-input">学习账号</label>
+                  <div id="job-account-combobox" class="job-account-combobox" role="combobox" aria-expanded="false" aria-haspopup="listbox" aria-owns="job-account-options">
+                    <i data-lucide="search" aria-hidden="true"></i>
+                    <input id="job-account-input" type="search" autocomplete="off" placeholder="搜索备注、账号或 ID" aria-autocomplete="list" aria-controls="job-account-options" aria-required="true">
+                    <input id="job-account" type="hidden">
+                    <div id="job-account-options" class="account-options" role="listbox" aria-label="学习账号" hidden></div>
+                  </div>
+                </div>
+                <button type="button" id="fetch-courses" class="ghost" disabled>拉取课程</button>
+              </div>
+              <button type="button" id="manage-accounts" class="ghost icon-button" title="管理账号" aria-label="管理账号"><i data-lucide="users-round"></i></button>
+            </div>
+            <div class="course-picker" role="group" aria-label="课程选择">
+              <div class="course-toolbar">
+                <div class="course-toolbar-actions">
+                  <button type="button" id="select-incomplete-courses" class="ghost compact" disabled>全选未完成</button>
+                  <button type="button" id="clear-course-selection" class="ghost icon-button compact" title="清除选择" aria-label="清除选择" disabled><i data-lucide="list-x"></i></button>
+                </div>
+                <label class="check-label"><input id="only-incomplete-courses" type="checkbox" checked disabled>仅未完成</label>
+              </div>
+              <span id="course-selection-count" class="selection-count">已选 0 / 可学习 0 · 已完成 0</span>
+              <p id="course-status" class="connection-status" role="status">尚未拉取课程</p>
+              <p id="course-error" class="error" role="alert" hidden></p>
+              <div id="course-list" class="course-list" aria-busy="false"></div>
+              <section id="course-detail-panel" class="course-detail-panel" aria-live="polite" hidden>
+                <div class="course-detail-toolbar">
+                  <div><h2 id="course-detail-title">任务点详情</h2><p id="course-detail-status" class="connection-status">请选择课程</p></div>
+                  <button type="button" id="refresh-course-detail" class="ghost icon-button compact" title="刷新任务点" aria-label="刷新任务点" disabled><i data-lucide="refresh-cw"></i></button>
+                </div>
+                <p id="course-detail-summary" class="course-detail-summary"></p>
+                <div class="course-detail-actions">
+                  <span id="course-detail-selection" class="selection-count">未勾选章节：整门课都学</span>
+                  <button type="button" id="select-detail-points" class="ghost compact" disabled>全选未完成章节</button>
+                  <button type="button" id="clear-detail-points" class="ghost compact" disabled>清空章节</button>
+                </div>
+                <p id="course-detail-error" class="error" role="alert" hidden></p>
+                <div id="course-detail-list" class="course-detail-list"></div>
+              </section>
+            </div>
+            <div class="options" aria-label="任务模式">
+              <label title="开启后只处理视频任务，不答题、不提交测验"><input id="videos-only" type="checkbox">开启看课（仅视频）</label>
+              <label><input id="auto-submit" type="checkbox" checked>自动提交测验</label>
+              <label title="默认开启；随机等待、随机课程顺序、午休/晚休/夜间暂停，更接近真人节奏"><input id="human-pacing" type="checkbox" checked>拟人节奏</label>
+              <label title="默认关闭；开启后才会调用视觉 AI 处理图片题"><input id="experimental-vision" type="checkbox">实验识图（图片题）</label>
+            </div>
+          </div>
+          <footer class="job-dialog-footer">
+            <p id="job-connection-error" class="error" role="alert" hidden>服务连接中断，请等待连接恢复。</p>
+            <p id="job-form-error" class="error" role="alert" tabindex="-1" hidden></p>
+            <div class="actions"><button type="button" id="job-editor-cancel" class="ghost">取消</button><button type="submit" id="create-job" disabled><i data-lucide="play"></i><span id="create-job-label">创建任务</span></button></div>
+          </footer>
+        </form>
+      </dialog>
+      <section id="accounts-view" role="tabpanel" aria-labelledby="accounts-tab" hidden>
+        <section class="summary-band accounts-summary" aria-label="账号统计">
+          <div class="summary-metric"><span class="metric-label"><i data-lucide="users-round"></i>全部账号</span><strong id="accounts-total">--</strong></div>
+          <div class="summary-metric"><span class="metric-label"><i data-lucide="activity"></i>正在刷课</span><strong id="accounts-studying">--</strong></div>
+          <div class="summary-metric"><span class="metric-label"><i data-lucide="book-check"></i>累计完成课程</span><strong id="accounts-completed">--</strong><span class="metric-note">门课程</span></div>
+          <div class="summary-metric"><span class="metric-label"><i data-lucide="circle-alert"></i>待处理账号</span><strong id="accounts-attention">--</strong></div>
+        </section>
+        <div class="accounts-toolbar">
+          <label class="search-field"><i data-lucide="search"></i><input id="account-search" type="search" aria-label="搜索账号" placeholder="搜索备注、账号"></label>
+          <label class="account-filter-label"><span>状态</span><select id="account-filter" aria-label="账号状态"><option value="all">全部账号</option><option value="studying">正在刷课</option><option value="queued">等待执行</option><option value="attention">待处理</option><option value="idle">未在学习</option></select></label>
+          <div class="actions"><button type="button" id="accounts-refresh" class="ghost icon-button" title="刷新账号" aria-label="刷新账号" disabled><i data-lucide="refresh-cw"></i></button><button type="button" id="add-account" disabled><i data-lucide="user-round-plus"></i>新增账号</button></div>
+        </div>
+        <p id="accounts-status" class="muted" role="status">等待连接</p>
+        <ul id="accounts-list" class="account-grid" aria-label="账号列表" aria-busy="false"></ul>
+        <div id="accounts-empty" class="empty-state" hidden><i data-lucide="users-round"></i><h3 id="accounts-empty-title">暂无账号</h3></div>
+      </section>
+      <dialog id="account-dialog" class="bank-dialog account-dialog" aria-labelledby="account-editor-title">
+        <header><h2 id="account-editor-title">新增账号</h2><button type="button" id="account-editor-close" class="ghost icon-button" title="关闭账号编辑" aria-label="关闭账号编辑"><i data-lucide="x"></i></button></header>
+        <form id="account-form" autocomplete="off">
+          <input id="account-target" type="hidden">
+          <label>备注<input id="account-label" maxlength="80" required placeholder="账号备注"></label>
+          <label>登录账号<input id="account-username" maxlength="128" autocomplete="off" required></label>
+          <label>密码<input id="account-password" type="password" maxlength="512" autocomplete="new-password" required></label>
+          <p id="account-form-error" class="error" role="alert" hidden></p>
+          <div class="actions account-dialog-actions"><button type="button" id="account-editor-cancel" class="ghost">取消</button><button type="submit" id="save-account"><i data-lucide="save"></i>保存账号</button></div>
+        </form>
+      </dialog>
+      <dialog id="account-delete-dialog" class="bank-dialog account-dialog" aria-labelledby="account-delete-title" aria-describedby="account-delete-message">
+        <header><h2 id="account-delete-title">删除账号</h2><button type="button" id="account-delete-close" class="ghost icon-button" title="关闭删除确认" aria-label="关闭删除确认"><i data-lucide="x"></i></button></header>
+        <p id="account-delete-message"></p>
+        <p id="account-delete-error" class="error" role="alert" hidden></p>
+        <div class="actions account-dialog-actions"><button type="button" id="account-delete-cancel" class="ghost">取消</button><button type="button" id="confirm-delete-account" class="danger"><i data-lucide="trash-2"></i>删除账号</button></div>
+      </dialog>
+      <section id="bank-view" role="tabpanel" aria-labelledby="bank-tab" hidden>
+        <div class="overview-toolbar"><div><h2>题库统计</h2><p id="bank-status" role="status">等待连接</p></div><button type="button" id="bank-refresh" class="ghost icon-button" title="刷新题库" aria-label="刷新题库" disabled><i data-lucide="refresh-cw"></i></button></div>
+        <p id="bank-error" class="error" role="alert" hidden></p>
+        <section class="summary-band bank-summary" aria-label="题库统计">
+          <div class="summary-metric"><span class="metric-label"><i data-lucide="library-big"></i>已入库题目</span><strong id="bank-entries">--</strong><span id="bank-courses-count" class="metric-note">--</span></div>
+          <div class="summary-metric"><span class="metric-label"><i data-lucide="scan-search"></i>题库命中</span><strong id="bank-hits">--</strong><span id="bank-shared" class="metric-note">--</span></div>
+          <div class="summary-metric"><span class="metric-label"><i data-lucide="files"></i>题库内容占用</span><strong id="bank-content">--</strong><span id="bank-content-note" class="metric-note">题目与答案</span></div>
+          <div class="summary-metric"><span class="metric-label"><i data-lucide="database"></i>后端数据库</span><strong id="bank-database">--</strong><span class="metric-note">全部后端数据 · 含 WAL</span></div>
+        </section>
+        <form id="bank-filters" class="bank-filters" role="search" autocomplete="off">
+          <label class="bank-search">搜索题库<input id="bank-search" type="search" maxlength="200" placeholder="题干或答案" aria-label="搜索题库"></label>
+          <label>课程<select id="bank-course"><option value="">全部课程</option></select></label>
+          <label>题型<select id="bank-type"><option value="">全部题型</option><option value="single">单选题</option><option value="multiple">多选题</option><option value="judgement">判断题</option><option value="completion">填空题</option><option value="shortanswer">简答题</option></select></label>
+          <label>排序<select id="bank-sort"><option value="updated">最近更新</option><option value="hits">命中最多</option><option value="oldest">最早入库</option></select></label>
+          <button type="button" id="bank-clear" class="ghost icon-button" title="清除筛选" aria-label="清除筛选"><i data-lucide="filter-x"></i></button>
+        </form>
+        <div class="bank-list-heading"><h2>题目列表</h2><span id="bank-results" class="muted" role="status">尚未读取</span></div>
+        <ul id="bank-list" class="bank-list" aria-label="题目列表" aria-busy="false"></ul>
+        <div id="bank-empty" class="empty-state" hidden><i data-lucide="search-x"></i><h3>没有匹配的题目</h3><p>当前筛选下暂无题目</p></div>
+        <div class="bank-pagination"><label>每页<select id="bank-page-size" aria-label="每页题目数"><option value="20">20 条</option><option value="50">50 条</option><option value="100">100 条</option></select></label><div class="insight-actions"><button type="button" id="bank-prev" class="ghost icon-button compact" title="上一页" aria-label="上一页" disabled><i data-lucide="chevron-left"></i></button><span id="bank-page" class="muted">第 1 / 1 页</span><button type="button" id="bank-next" class="ghost icon-button compact" title="下一页" aria-label="下一页" disabled><i data-lucide="chevron-right"></i></button></div></div>
+      </section>
+      <dialog id="bank-detail" class="bank-dialog" aria-labelledby="bank-detail-heading">
+        <header><div><span id="bank-detail-type" class="bank-type">题目详情</span><h2 id="bank-detail-heading">题目详情</h2></div><button type="button" id="bank-detail-close" class="ghost icon-button" title="关闭详情" aria-label="关闭详情"><i data-lucide="x"></i></button></header>
+        <p id="bank-detail-status" class="muted" role="status"></p><p id="bank-detail-error" class="error" role="alert" hidden></p>
+        <div id="bank-detail-body" hidden><p id="bank-detail-title" class="bank-detail-title"></p><section id="bank-options-section"><h3>选项</h3><pre id="bank-detail-options"></pre></section><section><h3>已存答案</h3><ol id="bank-detail-answers"></ol><span id="bank-detail-validation" class="bank-validation"></span></section><dl id="bank-detail-meta" class="property-list"></dl></div>
+      </dialog>
+      <section id="images-view" role="tabpanel" aria-labelledby="images-tab" hidden>
+        <div class="overview-toolbar"><div><h2>图片题记录</h2><p id="images-status" role="status">等待连接</p></div><button type="button" id="images-refresh" class="ghost icon-button" title="刷新图片题" aria-label="刷新图片题" disabled><i data-lucide="refresh-cw"></i></button></div>
+        <section class="summary-band" aria-label="图片题统计">
+          <div class="summary-metric"><span class="metric-label"><i data-lucide="images"></i>全部图片题</span><strong id="images-total">--</strong></div>
+          <div class="summary-metric"><span class="metric-label"><i data-lucide="scan-eye"></i>待核对</span><strong id="images-review">--</strong></div>
+          <div class="summary-metric"><span class="metric-label"><i data-lucide="loader-circle"></i>排队 / 处理中</span><strong id="images-active">--</strong></div>
+          <div class="summary-metric"><span class="metric-label"><i data-lucide="check-check"></i>已生成结果</span><strong id="images-done">--</strong></div>
+        </section>
+        <form id="images-filters" class="image-filters" role="search" autocomplete="off">
+          <label>搜索图片题<input id="images-search" type="search" maxlength="200" placeholder="题干或错误代码"></label>
+          <label>课程<select id="images-course"><option value="">全部课程</option></select></label>
+          <label>状态<select id="images-filter-status"><option value="">全部状态</option><option value="review">待核对</option><option value="active">排队 / 处理中</option><option value="done">已生成结果</option><option value="error">处理失败</option></select></label>
+          <button type="button" id="images-clear" class="ghost icon-button" title="清除图片题筛选" aria-label="清除图片题筛选"><i data-lucide="filter-x"></i></button>
+        </form>
+        <p id="images-error" class="error" role="alert" hidden></p>
+        <div class="image-review-layout">
+          <section class="image-review-browser" aria-labelledby="images-list-title">
+            <div class="image-section-heading"><h2 id="images-list-title">题目列表</h2><span id="images-results" class="muted" role="status">尚未读取</span></div>
+            <ul id="images-list" class="image-review-list" aria-label="图片题列表" aria-busy="false"></ul>
+            <div id="images-empty" class="empty-state" hidden><i data-lucide="search-x"></i><h3>暂无匹配的图片题</h3></div>
+            <div class="image-pagination"><button type="button" id="images-prev" class="ghost icon-button compact" title="上一页图片题" aria-label="上一页图片题" disabled><i data-lucide="chevron-left"></i></button><span id="images-page" class="muted">第 1 / 1 页</span><button type="button" id="images-next" class="ghost icon-button compact" title="下一页图片题" aria-label="下一页图片题" disabled><i data-lucide="chevron-right"></i></button></div>
+          </section>
+          <article id="images-detail" class="image-review-detail" aria-label="图片题详情" aria-busy="false">
+            <p id="images-detail-status" class="muted" role="status">尚未选择题目</p>
+            <p id="images-detail-error" class="error" role="alert" hidden></p>
+            <div id="images-detail-body" hidden>
+              <header class="image-detail-heading"><div><span id="images-detail-type" class="bank-type"></span><h2 id="images-detail-course"></h2></div><span id="images-detail-state" class="image-state"></span></header>
+              <section class="image-detail-section"><h3>原始题目</h3><div id="images-detail-title" class="image-question-text"></div></section>
+              <section id="images-options-section" class="image-detail-section"><h3>选项</h3><div id="images-detail-options" class="image-question-text"></div></section>
+              <section id="images-attachments-section" class="image-detail-section"><h3>其他原图</h3><div id="images-detail-attachments" class="image-attachments"></div></section>
+              <section class="image-detail-section"><div class="image-section-heading"><h3>答案对照</h3><span id="images-detail-quality" class="image-quality"></span></div><dl id="images-detail-answers" class="image-answer-comparison"></dl></section>
+              <section id="images-failure-section" class="image-detail-section image-failure" hidden><h3>未通过原因</h3><p id="images-detail-failure"></p><code id="images-detail-failure-code"></code></section>
+              <section class="image-detail-section"><h3>图片识别内容</h3><div id="images-detail-readings" class="image-readings"></div></section>
+              <section class="image-detail-section"><h3>AI 处理记录</h3><ol id="images-detail-stages" class="image-stages"></ol><p id="images-detail-checks" class="muted"></p></section>
+              <dl id="images-detail-meta" class="property-list image-detail-meta"></dl>
+            </div>
+          </article>
+        </div>
+      </section>
+      <dialog id="image-original-dialog" class="bank-dialog image-original-dialog" aria-labelledby="image-original-title">
+        <header><h2 id="image-original-title">原始图片</h2><div class="image-zoom-tools"><button type="button" id="image-zoom-out" class="ghost icon-button compact" title="缩小原图" aria-label="缩小原图"><i data-lucide="zoom-out"></i></button><output id="image-zoom-value">100%</output><button type="button" id="image-zoom-in" class="ghost icon-button compact" title="放大原图" aria-label="放大原图"><i data-lucide="zoom-in"></i></button><button type="button" id="image-original-close" class="ghost icon-button compact" title="关闭原图" aria-label="关闭原图"><i data-lucide="x"></i></button></div></header>
+        <div class="image-original-scroll"><img id="image-original" alt="题目原始图片"></div>
+      </dialog>
+      <section id="ai-windows-view" role="tabpanel" aria-labelledby="ai-windows-tab" hidden>
+        <div class="ai-windows-toolbar">
+          <div class="segmented" id="ai-window-layout" role="group" aria-label="显示窗口">
+            <button type="button" data-layout="both" aria-pressed="true">双窗口</button>
+            <button type="button" data-layout="deepseek" aria-pressed="false">DeepSeek</button>
+            <button type="button" data-layout="doubao" aria-pressed="false">豆包</button>
+          </div>
+          <span id="ai-windows-status" class="muted" role="status">等待连接</span>
+        </div>
+        <div id="ai-window-grid" class="ai-window-grid" data-layout="both">
+          <article id="ai-window-deepseek" class="ai-window" aria-labelledby="ai-window-deepseek-title">
+            <header class="ai-window-heading">
+              <div class="ai-window-name"><span class="ai-provider-mark" data-provider="deepseek">DS</span><div><h2 id="ai-window-deepseek-title">DeepSeek</h2><span class="muted">文本 AI</span></div></div>
+              <span id="ai-deepseek-state" class="health-state" data-state="unknown" role="status">待连接</span>
+            </header>
+            <div class="ai-window-tools">
+              <span id="ai-deepseek-activity" class="muted">--</span>
+              <div class="actions">
+                <button type="button" id="ai-deepseek-pause" class="ghost icon-button compact" title="暂停画面" aria-label="暂停 DeepSeek 画面" aria-pressed="false"><i data-lucide="pause"></i></button>
+                <button type="button" id="ai-deepseek-refresh" class="ghost icon-button compact" title="重新连接" aria-label="重新连接 DeepSeek"><i data-lucide="refresh-cw"></i></button>
+                <button type="button" id="ai-deepseek-zoom-out" class="ghost icon-button compact" title="缩小画面" aria-label="缩小 DeepSeek 画面" disabled><i data-lucide="zoom-out"></i></button>
+                <output id="ai-deepseek-zoom" class="ai-window-zoom">100%</output>
+                <button type="button" id="ai-deepseek-zoom-in" class="ghost icon-button compact" title="放大画面" aria-label="放大 DeepSeek 画面"><i data-lucide="zoom-in"></i></button>
+                <button type="button" id="ai-deepseek-fullscreen" class="ghost icon-button compact" title="全屏" aria-label="全屏显示 DeepSeek"><i data-lucide="maximize"></i></button>
+              </div>
+            </div>
+            <div class="ai-window-surface" tabindex="0" role="region" aria-label="DeepSeek 实时画面">
+              <img id="ai-deepseek-frame" alt="服务器 DeepSeek 浏览器画面" draggable="false" hidden>
+              <div id="ai-deepseek-placeholder" class="ai-window-placeholder"><i data-lucide="monitor"></i><span>正在连接 DeepSeek</span></div>
+            </div>
+            <footer class="ai-window-footer"><span id="ai-deepseek-message" role="status">等待服务器画面</span><time id="ai-deepseek-time">--</time></footer>
+          </article>
+          <article id="ai-window-doubao" class="ai-window" aria-labelledby="ai-window-doubao-title">
+            <header class="ai-window-heading">
+              <div class="ai-window-name"><span class="ai-provider-mark" data-provider="doubao">豆</span><div><h2 id="ai-window-doubao-title">豆包</h2><span class="muted">图片 AI</span></div></div>
+              <span id="ai-doubao-state" class="health-state" data-state="unknown" role="status">待连接</span>
+            </header>
+            <div class="ai-window-tools">
+              <span id="ai-doubao-activity" class="muted">--</span>
+              <div class="actions">
+                <button type="button" id="ai-doubao-pause" class="ghost icon-button compact" title="暂停画面" aria-label="暂停豆包画面" aria-pressed="false"><i data-lucide="pause"></i></button>
+                <button type="button" id="ai-doubao-refresh" class="ghost icon-button compact" title="重新连接" aria-label="重新连接豆包"><i data-lucide="refresh-cw"></i></button>
+                <button type="button" id="ai-doubao-zoom-out" class="ghost icon-button compact" title="缩小画面" aria-label="缩小豆包画面" disabled><i data-lucide="zoom-out"></i></button>
+                <output id="ai-doubao-zoom" class="ai-window-zoom">100%</output>
+                <button type="button" id="ai-doubao-zoom-in" class="ghost icon-button compact" title="放大画面" aria-label="放大豆包画面"><i data-lucide="zoom-in"></i></button>
+                <button type="button" id="ai-doubao-fullscreen" class="ghost icon-button compact" title="全屏" aria-label="全屏显示豆包"><i data-lucide="maximize"></i></button>
+              </div>
+            </div>
+            <div class="ai-window-surface" tabindex="0" role="region" aria-label="豆包实时画面">
+              <img id="ai-doubao-frame" alt="服务器豆包浏览器画面" draggable="false" hidden>
+              <div id="ai-doubao-placeholder" class="ai-window-placeholder"><i data-lucide="monitor"></i><span>正在连接豆包</span></div>
+            </div>
+            <footer class="ai-window-footer"><span id="ai-doubao-message" role="status">等待服务器画面</span><time id="ai-doubao-time">--</time></footer>
+          </article>
+        </div>
+      </section>
+      <section id="ai-chat-view" role="tabpanel" aria-labelledby="ai-chat-tab" hidden>
+        <div class="section-heading jobs-heading">
+          <div><h2><i data-lucide="messages-square"></i>AI 对话</h2><p id="ai-chat-summary">显示后端最近发出的 AI 请求与模型回复</p></div>
+          <div class="actions">
+            <span id="ai-chat-state" class="health-state" data-state="unknown" role="status">待连接</span>
+            <button type="button" id="ai-chat-refresh" class="ghost icon-button" title="刷新对话" aria-label="刷新 AI 对话"><i data-lucide="refresh-cw"></i></button>
+          </div>
+        </div>
+        <p id="ai-chat-error" class="error" role="alert" hidden></p>
+        <ul id="ai-chat-list" class="ai-chat-list" aria-label="AI 对话记录" aria-live="polite"></ul>
+        <div id="ai-chat-empty" class="empty-state" hidden><i data-lucide="messages-square"></i><h3>暂无 AI 对话</h3><p>答题请求开始后会显示在这里，只保留最近的记录</p></div>
+      </section>
+      <section id="notes-view" role="tabpanel" aria-labelledby="notes-tab" hidden>
+        <div class="notes-layout">
+          <section class="note-editor">
+            <div class="section-heading"><h2><i data-lucide="square-pen"></i>记录事项</h2></div>
+            <form id="form">
+              <label>标题<input id="title" name="title" maxlength="200" required placeholder="事项标题"></label>
+              <label>补充<textarea id="detail" name="detail" maxlength="5000" rows="5" placeholder="补充内容"></textarea></label>
+              <label>状态<select id="status" name="status"><option value="todo">待办</option><option value="doing">进行中</option><option value="done">完成</option></select></label>
+              <div class="actions"><button type="submit" id="save"><i data-lucide="plus"></i>添加</button><button type="button" id="cancel" class="ghost" hidden><i data-lucide="x"></i>取消</button></div>
+              <p id="form-error" class="error" hidden></p>
+            </form>
+          </section>
+          <section class="notes-list">
+            <div class="section-heading"><h2><i data-lucide="notebook-tabs"></i>工作事项</h2></div>
+            <p id="empty" class="empty">暂无工作事项</p><ul id="list"></ul><p id="load-error" class="error" hidden></p>
+          </section>
+        </div>
+      </section>
+      <section id="pacing-view" role="tabpanel" aria-labelledby="pacing-tab" hidden>
+        <div class="section-heading jobs-heading">
+          <div><h2><i data-lucide="coffee"></i>拟人节奏</h2><p id="pacing-summary">午饭、晚饭、夜间休息与随机间隔</p></div>
+          <div class="actions">
+            <span id="pacing-state" class="health-state" data-state="unknown" role="status">待连接</span>
+            <button type="button" id="pacing-refresh" class="ghost icon-button" title="刷新节奏状态" aria-label="刷新节奏状态"><i data-lucide="refresh-cw"></i></button>
+          </div>
+        </div>
+        <p id="pacing-error" class="error" role="alert" hidden></p>
+        <section class="pacing-hero" aria-label="当前节奏状态">
+          <div class="pacing-hero-clock">
+            <span class="pacing-clock" id="pacing-clock">--:--</span>
+            <span class="pacing-zone" id="pacing-zone">节奏时区</span>
+          </div>
+          <div class="pacing-hero-text">
+            <h3 id="pacing-now">正在读取节奏状态</h3>
+            <p id="pacing-next">—</p>
+          </div>
+          <span class="pacing-flag" id="pacing-flag" data-state="off">未开启</span>
+        </section>
+        <section class="pacing-timeline" aria-label="一天的休息时段">
+          <div class="pacing-track" id="pacing-track" role="img" aria-label="一天 24 小时的休息时段分布"></div>
+          <ul class="pacing-windows" id="pacing-windows" aria-live="polite"></ul>
+        </section>
+        <div class="pacing-columns">
+          <section class="pacing-card" aria-label="正在休息的任务">
+            <h3><i data-lucide="moon-star"></i>正在休息的任务</h3>
+            <ul class="pacing-resting" id="pacing-resting" aria-live="polite"></ul>
+            <p class="empty" id="pacing-resting-empty">暂时没有任务在休息</p>
+          </section>
+          <section class="pacing-card" aria-label="随机间隔">
+            <h3><i data-lucide="timer"></i>随机间隔</h3>
+            <table class="pacing-gaps">
+              <thead><tr><th>场景</th><th>间隔</th></tr></thead>
+              <tbody id="pacing-gaps"></tbody>
+            </table>
+            <p class="pacing-note" id="pacing-note"></p>
+          </section>
+        </div>
+        <section class="guard-card" aria-labelledby="guard-title">
+          <div class="guard-heading">
+            <div>
+              <h3 id="guard-title"><i data-lucide="shield-check"></i>视频进度看护</h3>
+              <p id="guard-note">平台在服务端核对两次上报的增量，因此这里只做降低风险的保守设置</p>
+            </div>
+            <span id="guard-state" class="health-state" data-state="unknown" role="status">待连接</span>
+          </div>
+          <p id="guard-error" class="error" role="alert" hidden></p>
+          <div class="guard-grid">
+            <label class="guard-field" title="超过 1.5 倍速时平台最容易判定异常并清空进度；小于 1 就是慢放">
+              <span>倍速上限</span>
+              <input id="guard-max-speed" type="number" min="0.5" max="1.5" step="0.05" inputmode="decimal" value="0.95">
+              <small>0.5–1.5，可填 0.95 这类慢放值；默认 0.95（接近原速）</small>
+            </label>
+            <label class="guard-field" title="北京时间 00:00-06:00 不新开视频，已经在播的会看完">
+              <span>夜间静默</span>
+              <input id="guard-quiet-hours" type="checkbox" checked>
+              <small>北京时间 00:00–06:00 不新开视频，正在播放的照常看完</small>
+            </label>
+            <label class="guard-field" title="发现平台回退后先停一会儿，再按平台记录的位置继续">
+              <span>回退后自动暂停</span>
+              <input id="guard-rollback-pause" type="checkbox">
+              <small>暂停 15–30 分钟后从平台记录的位置继续；关闭时只提醒并降到 1 倍速</small>
+            </label>
+            <label class="guard-field" title="每 N 次上报回读一次平台进度">
+              <span>回读间隔</span>
+              <input id="guard-recheck" type="number" min="1" max="50" step="1" inputmode="numeric" value="8">
+              <small>每 N 次上报回读平台进度（1–50），越小越敏感</small>
+            </label>
+          </div>
+          <div class="guard-actions">
+            <button type="button" id="guard-save">保存看护设置</button>
+            <button type="button" id="guard-refresh" class="ghost">重新读取</button>
+            <span id="guard-hint" class="guard-hint" role="status"></span>
+          </div>
+          <div class="guard-rollbacks">
+            <h4>最近的进度回退</h4>
+            <ul id="guard-rollback-list" aria-live="polite"></ul>
+            <p class="empty" id="guard-rollback-empty">最近 7 天没有记录到平台回退</p>
+          </div>
+        </section>
+      </section>
+      <section id="connection-view" role="tabpanel" aria-labelledby="connection-tab" hidden>
+        <div class="section-heading"><h2><i data-lucide="plug-zap"></i>后端服务</h2></div>
+        <section class="ai-channel-panel" aria-labelledby="ai-channel-title">
+          <div class="ai-channel-heading">
+            <div><h3 id="ai-channel-title">AI 答题通道</h3><p id="ai-channel-status" role="status">等待后端连接</p></div>
+          </div>
+          <div class="ai-route-row">
+            <div class="ai-route-label"><strong>文本题</strong><span>选择题、填空题等纯文字题目</span></div>
+            <div id="ai-channel-switch" class="segmented" role="group" aria-label="文本题通道">
+              <button type="button" id="ai-channel-web" aria-pressed="true" disabled>网页 AI</button>
+              <button type="button" id="ai-channel-api" aria-pressed="false" disabled>API AI</button>
+            </div>
+          </div>
+          <div class="ai-route-row">
+            <div class="ai-route-label"><strong>图片题</strong><span>带截图、需要识图的题目</span></div>
+            <div id="ai-vision-switch" class="segmented" role="group" aria-label="图片题通道">
+              <button type="button" id="ai-vision-auto" aria-pressed="true" disabled>跟随文本</button>
+              <button type="button" id="ai-vision-web" aria-pressed="false" disabled>网页 AI（豆包）</button>
+              <button type="button" id="ai-vision-api" aria-pressed="false" disabled>API AI</button>
+            </div>
+          </div>
+          <label class="ai-vision-toggle" title="关闭时图片题不调用 AI，保持未完成并进入图片题核对">
+            <input type="checkbox" id="ai-vision-enabled" disabled><span>图片题自动处理</span>
+          </label>
+          <label class="ai-vision-toggle" title="图片题第一次答不出来时，自动换另一条通道再试一次">
+            <input type="checkbox" id="ai-vision-fallback" disabled><span>图片题失败自动换通道重试</span>
+          </label>
+          <label class="ai-vision-toggle" title="图片 API 一次请求直接给答案；关闭则走识别→解题→复核三步">
+            <input type="checkbox" id="ai-vision-direct" disabled><span>图片 API 一次直答（更快更准）</span>
+          </label>
+          <p id="ai-channel-note" class="ai-channel-note">连接后显示答题渠道</p>
+          <p id="ai-channel-error" class="error" role="alert" hidden></p>
+        </section>
+        <section id="ai-vision-provider-panel" class="ai-provider-panel" aria-labelledby="ai-vision-provider-title">
+          <div class="ai-channel-heading">
+            <div><h3 id="ai-vision-provider-title">图片 API 上游</h3><p id="ai-vision-provider-status" role="status">等待后端连接</p></div>
+            <div id="ai-vision-protocol" class="segmented" role="group" aria-label="图片上游协议">
+              <button type="button" id="ai-vision-protocol-inherit" aria-pressed="true" disabled>跟随文本</button>
+              <button type="button" id="ai-vision-protocol-chat" aria-pressed="false" disabled>Chat Completions</button>
+              <button type="button" id="ai-vision-protocol-responses" aria-pressed="false" disabled>Responses API</button>
+            </div>
+          </div>
+          <form id="ai-vision-provider-form" autocomplete="off">
+            <label>接口地址<input id="ai-vision-provider-endpoint" type="url" placeholder="留空沿用文本 API 的地址" disabled></label>
+            <label>API 密钥<input id="ai-vision-provider-key" type="password" autocomplete="new-password" placeholder="留空沿用文本 API 的密钥" disabled></label>
+            <div class="ai-provider-row">
+              <label>图片模型<input id="ai-vision-provider-model" list="ai-vision-provider-models" placeholder="例如 nvidia/nemotron-3.5-super-vl:free" disabled></label>
+              <label>备用图片模型<input id="ai-vision-provider-fallbacks" placeholder='["backup-vision-model"]' disabled></label>
+            </div>
+            <datalist id="ai-vision-provider-models"></datalist>
+            <div class="actions">
+              <button type="submit" id="ai-vision-provider-save" disabled><i data-lucide="save"></i>保存图片 API</button>
+              <button type="button" id="ai-vision-provider-fetch" class="ghost" disabled><i data-lucide="list"></i>拉取可识图模型</button>
+              <button type="button" id="ai-vision-provider-bench" class="ghost" disabled><i data-lucide="gauge"></i>按题库测正确率</button>
+              <button type="button" id="ai-vision-provider-clear-key" class="ghost" disabled>清除密钥</button>
+            </div>
+            <p id="ai-vision-provider-note" class="ai-channel-note">留空的项沿用文本 API 配置，所以只想换图片模型时填一个模型名即可。</p>
+            <ul id="ai-vision-bench-result" class="ai-vision-bench" role="status" hidden></ul>
+            <p id="ai-vision-provider-error" class="error" role="alert" hidden></p>
+          </form>
+        </section>
+        <section id="ai-provider-panel" class="ai-provider-panel" aria-labelledby="ai-provider-title">
+          <div class="ai-channel-heading">
+            <div><h3 id="ai-provider-title">API 上游配置</h3><p id="ai-provider-status" role="status">等待后端连接</p></div>
+            <div id="ai-provider-protocol" class="segmented" role="group" aria-label="上游协议">
+              <button type="button" id="ai-protocol-chat" aria-pressed="true" disabled>Chat Completions</button>
+              <button type="button" id="ai-protocol-responses" aria-pressed="false" disabled>Responses API</button>
+            </div>
+          </div>
+          <form id="ai-provider-form" autocomplete="off">
+            <label>接口地址<input id="ai-provider-endpoint" type="url" placeholder="https://api.example.com/v1" disabled></label>
+            <label>API 密钥<input id="ai-provider-key" type="password" autocomplete="new-password" placeholder="尚未保存" disabled></label>
+            <div class="ai-provider-row">
+              <label>文字模型<input id="ai-provider-model" list="ai-provider-models" placeholder="选择或输入模型名" disabled></label>
+              <label>识图模型<input id="ai-provider-vision" list="ai-provider-models" placeholder="留空则使用文字模型" disabled></label>
+            </div>
+            <div class="ai-provider-row">
+              <label>备用文字模型<input id="ai-provider-fallbacks" placeholder='["backup-model"]' disabled></label>
+              <label>上游超时（秒）<input id="ai-provider-timeout" type="number" min="10" max="900" step="5" value="180" disabled></label>
+            </div>
+            <label>代理地址（可选，仅 AI 请求走它）<input id="ai-provider-proxy" placeholder="http://127.0.0.1:7890，留空则直连" disabled></label>
+            <datalist id="ai-provider-models"></datalist>
+            <div class="actions">
+              <button type="submit" id="ai-provider-save" disabled><i data-lucide="save"></i>保存配置</button>
+              <button type="button" id="ai-provider-fetch" class="ghost" disabled><i data-lucide="list"></i>拉取模型列表</button>
+              <button type="button" id="ai-provider-test" class="ghost" disabled><i data-lucide="flask-conical"></i>单题测试</button>
+              <button type="button" id="ai-provider-clear-key" class="ghost" disabled>清除密钥</button>
+            </div>
+            <p id="ai-provider-note" class="ai-channel-note">密钥只保存在后端数据库的加密字段中，不会回显到页面。</p>
+            <p id="ai-provider-result" class="ai-provider-result" role="status" hidden></p>
+            <p id="ai-provider-error" class="error" role="alert" hidden></p>
+          </form>
+        </section>
+        <div id="connection-settings-host"></div>
+      </section>
+      <section id="storage-view" role="tabpanel" aria-labelledby="storage-tab" hidden>
+        <div class="section-heading"><h2><i data-lucide="database"></i>存储状态</h2><button type="button" id="refresh-storage" class="ghost icon-button" title="刷新存储状态" aria-label="刷新存储状态"><i data-lucide="refresh-cw"></i></button></div>
+        <p id="storage-error" class="error" role="alert" hidden></p>
+        <div class="storage-grid">
+          <section><h3>控制台数据</h3><dl class="property-list">
+            <div><dt>存储引擎</dt><dd id="storage-console-engine">--</dd></div>
+            <div><dt>运行状态</dt><dd id="storage-console-status">--</dd></div>
+            <div><dt>日志模式</dt><dd id="storage-console-journal">--</dd></div>
+            <div><dt>数据库大小</dt><dd id="storage-console-size">--</dd></div>
+            <div><dt>结构版本</dt><dd id="storage-console-version">--</dd></div>
+          </dl></section>
+          <section><h3>任务后端数据</h3><dl class="property-list">
+            <div><dt>存储引擎</dt><dd id="storage-backend-engine">--</dd></div>
+            <div><dt>运行状态</dt><dd id="storage-backend-status">等待后端连接</dd></div>
+            <div><dt>日志模式</dt><dd id="storage-backend-journal">--</dd></div>
+            <div><dt>数据库大小</dt><dd id="storage-backend-size">--</dd></div>
+            <div><dt>账号 / 任务 / 答案</dt><dd id="storage-backend-records">--</dd></div>
+          </dl></section>
+        </div>
+      </section>
+      <section id="users-view" role="tabpanel" aria-labelledby="users-tab" hidden>
+        <div class="section-heading jobs-heading">
+          <div><h2><i data-lucide="user-cog"></i>用户管理</h2><p id="users-summary">只有最高管理员可以创建和管理用户</p></div>
+          <div class="actions"><button type="button" id="users-refresh" class="ghost icon-button" title="刷新用户" aria-label="刷新用户"><i data-lucide="refresh-cw"></i></button><button type="button" id="add-user"><i data-lucide="user-round-plus"></i>新增用户</button></div>
+        </div>
+        <p id="users-error" class="error" role="alert" hidden></p>
+        <ul id="users-list" class="user-list" aria-label="用户列表"></ul>
+        <div id="users-empty" class="empty-state" hidden><i data-lucide="users"></i><h3>暂无普通用户</h3><p>点击“新增用户”创建账号</p></div>
+      </section>
+      <dialog id="user-dialog" class="bank-dialog user-dialog" aria-labelledby="user-dialog-title">
+        <header><h2 id="user-dialog-title">新增用户</h2><button type="button" id="user-dialog-close" class="ghost icon-button" title="关闭" aria-label="关闭用户编辑"><i data-lucide="x"></i></button></header>
+        <form id="user-form">
+          <div class="user-dialog-body">
+            <div class="user-fields">
+              <label>用户名<input id="user-username" autocomplete="off" maxlength="64" required></label>
+              <label><span id="user-password-label">密码</span><input id="user-password" type="password" autocomplete="new-password" maxlength="200"></label>
+              <label>状态<select id="user-status"><option value="active">正常</option><option value="disabled">停用</option></select></label>
+              <label>可用课程数<input id="user-credits" type="number" min="0" max="100000" step="1" value="0"></label>
+              <label class="user-plan-toggle"><input id="user-plan-enabled" type="checkbox">开通月度套餐</label>
+              <label>套餐到期日<input id="user-plan-date" type="date"></label>
+              <label>单次最多课程<input id="user-plan-limit" type="number" min="1" max="50" step="1" value="1"></label>
+            </div>
+            <section class="user-account-assignment" aria-labelledby="user-accounts-title">
+              <div class="section-heading"><div><h3 id="user-accounts-title">分配学习账号</h3><p>同一学习账号只能分配给一个用户</p></div><span id="user-account-count" class="muted">0 个已选</span></div>
+              <div id="user-account-options" class="user-account-options"></div>
+            </section>
+            <p id="user-form-error" class="error" role="alert" hidden></p>
+          </div>
+          <footer class="job-dialog-footer"><div class="actions"><button type="button" id="user-dialog-cancel" class="ghost">取消</button><button type="submit" id="save-user"><i data-lucide="check"></i><span>保存用户</span></button></div></footer>
+        </form>
+      </dialog>
+      <dialog id="password-dialog" class="bank-dialog" aria-labelledby="password-dialog-title">
+        <header><h2 id="password-dialog-title">修改密码</h2><button type="button" id="password-dialog-close" class="ghost icon-button" title="关闭" aria-label="关闭修改密码"><i data-lucide="x"></i></button></header>
+        <form id="password-form">
+          <div class="job-dialog-body">
+            <label>当前密码<input id="password-current" type="password" autocomplete="current-password" required></label>
+            <label>新密码<input id="password-new" type="password" autocomplete="new-password" minlength="8" required></label>
+            <p id="password-error" class="error" role="alert" hidden></p>
+          </div>
+          <footer class="job-dialog-footer"><div class="actions"><button type="button" id="password-cancel" class="ghost">取消</button><button type="submit"><i data-lucide="check"></i>保存新密码</button></div></footer>
+        </form>
+      </dialog>
+      <footer class="workspace-footer"><span>星光 · 工作空间</span><span id="database-status">正在读取数据库状态</span></footer>
+    </main>
+    <nav class="mobile-nav" id="mobile-nav" aria-label="快捷导航">
+      <button type="button" data-view="overview" aria-pressed="true"><i data-lucide="layout-dashboard"></i><span>总览</span></button>
+      <button type="button" data-view="tasks" aria-pressed="false"><i data-lucide="list-checks"></i><span>任务</span></button>
+      <button type="button" data-view="accounts" aria-pressed="false"><i data-lucide="users-round"></i><span>账号</span></button>
+      <button type="button" data-view="pacing" aria-pressed="false" data-owner-only hidden><i data-lucide="coffee"></i><span>节奏</span></button>
+      <button type="button" id="mobile-more" aria-pressed="false" aria-expanded="false" aria-controls="sidebar"><i data-lucide="menu"></i><span>更多</span></button>
+    </nav>
+  </div>
+  <script src="lucide.min.js"></script>
+  <script src="session-ui.js"></script>
+  <script src="console-ui.js"></script>
+  <script src="app.js"></script>
+  <script src="insights.js"></script>
+  <script src="image-review.js"></script>
+  <script src="ai-windows.js"></script>
+  <script src="backend.js"></script>
+  <script src="ai-provider.js"></script>
+  <script src="pacing.js"></script>
+  <script src="guard.js"></script>
+  <script src="users.js"></script>
+</body>
+</html>

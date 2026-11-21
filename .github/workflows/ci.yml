@@ -1,0 +1,34 @@
+name: Source checks
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - run: python scripts/check-release.py
+      - run: sudo apt-get update && sudo apt-get install -y libgomp1 libgl1 libglib2.0-0
+      - run: python -m pip install -r chaoxing-3.1.4/requirements-service.txt
+      - run: python -m unittest discover -s tests
+        working-directory: chaoxing-3.1.4
+  website:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: server-web/go.mod
+          cache-dependency-path: server-web/go.sum
+      - run: go test ./...
+        working-directory: server-web
+      - run: bash scripts/build-linux.sh
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --test server-web/scripts/*.test.mjs

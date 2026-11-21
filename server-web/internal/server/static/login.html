@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>登录 · 星舟任务控制台</title>
+  <style>
+    :root { color-scheme: light; --accent: #137f5b; --line: #dde6e0; --ink: #263d30; --muted: #7c8b81; }
+    * { box-sizing: border-box; }
+    body { margin: 0; min-height: 100vh; display: grid; place-items: center; padding: 24px; background: #f3f7f4; color: var(--ink); font: 14px/1.5 "Segoe UI", "Microsoft YaHei", sans-serif; }
+    main { width: min(420px, 100%); }
+    .brand { display: flex; align-items: center; gap: 12px; margin-bottom: 22px; color: var(--ink); text-decoration: none; }
+    .brand img { width: 42px; height: 42px; border-radius: 9px; }
+    .brand strong { display: block; font-size: 22px; letter-spacing: .03em; }
+    .brand span { color: var(--muted); font-size: 12px; }
+    form { display: grid; gap: 16px; padding: 28px; background: #fff; border: 1px solid var(--line); border-radius: 10px; box-shadow: 0 12px 32px #203d2b12; }
+    h1 { margin: 0 0 4px; font-size: 19px; }
+    p { margin: 0; color: var(--muted); font-size: 12px; }
+    label { display: grid; gap: 7px; font-size: 12px; font-weight: 550; }
+    input { width: 100%; min-height: 42px; padding: 9px 11px; border: 1px solid var(--line); border-radius: 6px; font: inherit; }
+    input:focus { outline: 2px solid #9bd7c1; outline-offset: 1px; border-color: var(--accent); }
+    button { min-height: 42px; border: 0; border-radius: 6px; background: var(--accent); color: #fff; font: inherit; font-weight: 600; cursor: pointer; }
+    button:disabled { opacity: .6; cursor: wait; }
+    .error { min-height: 1.5em; margin: 0; color: #b63d49; font-size: 12px; }
+    .secure { margin-top: 14px; text-align: center; color: #93a097; font-size: 10px; }
+  </style>
+</head>
+<body>
+  <main>
+    <a class="brand" href="./" aria-label="星舟任务控制台"><img src="brand.png" alt=""><div><strong>星光</strong><span>课程任务控制台</span></div></a>
+    <form id="login-form" autocomplete="on">
+      <div><h1>登录</h1><p>账号由最高管理员创建</p></div>
+      <label>用户名<input id="login-username" name="username" autocomplete="username" maxlength="64" required autofocus></label>
+      <label>密码<input id="login-password" name="password" type="password" autocomplete="current-password" maxlength="200" required></label>
+      <p id="login-error" class="error" role="alert"></p>
+      <button type="submit" id="login-submit">登录</button>
+    </form>
+    <p class="secure">会话仅保存在 HttpOnly Cookie 中</p>
+  </main>
+  <script>
+    const form = document.querySelector("#login-form");
+    const submit = document.querySelector("#login-submit");
+    const error = document.querySelector("#login-error");
+    fetch("/api/session", { cache: "no-store" }).then((response) => {
+      if (response.ok) location.replace("/");
+    }).catch(() => {});
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      submit.disabled = true;
+      error.textContent = "";
+      try {
+        const response = await fetch("/api/session", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            username: document.querySelector("#login-username").value,
+            password: document.querySelector("#login-password").value,
+          }),
+        });
+        const result = await response.json().catch(() => ({}));
+        if (!response.ok) throw new Error(result.error || "登录失败");
+        document.querySelector("#login-password").value = "";
+        location.replace("/");
+      } catch (failure) {
+        error.textContent = failure.message || "登录失败";
+        submit.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>

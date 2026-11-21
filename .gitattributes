@@ -1,0 +1,5 @@
+* text=auto eol=lf
+*.png binary
+*.jpg binary
+# Keep significant whitespace inside upstream multiline message literals.
+chaoxing-3.1.4/main.py whitespace=-blank-at-eol

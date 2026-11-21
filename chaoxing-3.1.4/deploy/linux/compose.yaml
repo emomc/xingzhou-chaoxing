@@ -1,0 +1,63 @@
+name: chaoxing-webai
+
+services:
+  webai:
+    build:
+      context: ../../../WebAI2API
+    restart: unless-stopped
+    init: true
+    shm_size: "1gb"
+    ports:
+      - "127.0.0.1:${WEBAI_PORT:-3000}:3000"
+    environment:
+      TZ: ${TZ:-Asia/Shanghai}
+      WEBAI_API_KEY: ${WEBAI_API_KEY:?Run python3 setup.py first}
+    volumes:
+      - type: bind
+        source: ./runtime/webai
+        target: /app/data
+        bind:
+          create_host_path: false
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - "fetch('http://127.0.0.1:3000/v1/models',{headers:{Authorization:'Bearer '+process.env.WEBAI_API_KEY},signal:AbortSignal.timeout(5000)}).then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 90s
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  course:
+    profiles: ["tools"]
+    build:
+      context: ../..
+      dockerfile: deploy/linux/Dockerfile
+    init: true
+    stdin_open: true
+    tty: true
+    environment:
+      TZ: ${TZ:-Asia/Shanghai}
+      WEBAI_API_KEY: ${WEBAI_API_KEY:?Run python3 setup.py first}
+      WEBAI_VISION_API_KEY: ${WEBAI_VISION_API_KEY:-}
+      CHAOXING_IMAGE_HOSTS: ${CHAOXING_IMAGE_HOSTS:-}
+    volumes:
+      - type: bind
+        source: ./runtime/course
+        target: /state
+        bind:
+          create_host_path: false
+      - type: bind
+        source: ../../resource
+        target: /state/resource
+        read_only: true
+        bind:
+          create_host_path: false
+    depends_on:
+      webai:
+        condition: service_healthy

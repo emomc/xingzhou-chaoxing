@@ -1,0 +1,20 @@
+Xingzhou / 星舟 — public source edition
+
+The Chaoxing backend is derived from Samueli924/chaoxing v3.1.4:
+https://github.com/Samueli924/chaoxing
+Its GNU GPL version 3 license is retained in LICENSE and
+chaoxing-3.1.4/LICENSE. Existing author and source notices are retained.
+
+This distribution adds and maintains the authenticated service backend,
+independent Go web console, related tests, and Linux operating instructions.
+The initial public snapshot was prepared on 2026-11-21. Publication-only
+changes include the Xingzhou name, a generic initial owner username,
+sanitized configuration templates, isolated offline test fixtures, and
+independent build/run documentation.
+
+Lucide's bundled JavaScript is distributed under its own ISC license.
+See server-web/internal/server/static/LICENSE for the complete notice.
+Other Go/Python dependencies retain their respective upstream licenses.
+
+No account database, learning history, API key, session cookie, production
+deployment configuration, or prebuilt executable is included.

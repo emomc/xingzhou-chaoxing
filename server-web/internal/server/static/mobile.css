@@ -1,0 +1,266 @@
+/* 星光控制台 · 手机端 / 平板端样式层
+ *
+ * Loaded after app.css / pacing.css / image-review.css / ai-windows.css, so every rule here
+ * is an intentional override. Desktop (>=901px) is untouched.
+ *
+ *   <=900px   触摸设备：字号下限、触摸目标下限（平板与横屏手机）
+ *   641–900px 平板：两列卡片
+ *   <=640px   手机：底部快捷导航、卡片化底部抽屉、吸顶筛选条、更大的间距
+ *
+ * 字号下限是最重要的一条：桌面版为了密度用了 9–11px 的标签字号，手机上离眼 40cm
+ * 完全看不清。手机与平板上次要信息一律 ≥12px、正文 ≥13px，层级改由字重和颜色承担。
+ */
+
+/* =========================================================== 触摸设备 <=900px */
+@media (max-width: 900px) {
+  /* 次要文字在手机上加深一档：浅灰在户外光线下基本读不出来 */
+  :root { --muted: #55655c; }
+  body { -webkit-text-size-adjust: 100%; }
+  button, a, input, select, textarea, summary { -webkit-tap-highlight-color: transparent; }
+  button:not(:disabled):active { filter: brightness(0.94); }
+
+  /* ---- 触摸目标：按钮 ≥42px，图标按钮 42×42，输入框 ≥42px ---- */
+  button, .job .actions button, #list .actions button { min-height: 42px; }
+  button.compact { min-height: 40px; }
+  button.icon-button { width: 42px; height: 42px; flex-basis: 42px; }
+  button.icon-button.compact { width: 40px; height: 40px; flex-basis: 40px; }
+  input, select, textarea { min-height: 42px; font-size: 16px; }
+  .ai-route-row { gap: 10px; }
+  .ai-route-label strong { font-size: 13px; }
+  .ai-route-label span { font-size: 12px; }
+  .ai-route-row .segmented { flex: 1 1 100%; }
+  .ai-route-row .segmented button { flex: 1 1 0; min-height: 42px; }
+  .ai-vision-toggle { font-size: 13px; gap: 10px; }
+  .ai-vision-toggle input { width: 20px; height: 20px; }
+  input[type="checkbox"] { width: 20px; height: 20px; min-height: 20px; flex-basis: 20px; }
+  summary { min-height: 44px; display: flex; align-items: center; }
+  .segmented button { min-height: 40px; }
+  .search-field input, .bank-filters input, .bank-filters select,
+  .bank-pagination select, .job-batch-filters input { min-height: 42px; }
+  .search-field svg { top: 14px; }
+
+  /* ---- 字号下限：次要信息 12px，正文 13px ---- */
+  .count, .sync-label, .metric-label, .metric-note, .overview-toolbar p,
+  .overview-jobs-heading p, .service-health-copy p, .health-state, .overview-job-context,
+  .overview-job-activity, .resource-metric .metric-note, .resource-data-location code,
+  .resource-facts dt, .resource-facts dd, .bank-overview-values span, .bank-filters label,
+  .bank-row-meta, .bank-type, .bank-pagination > label, .bank-validation, .connection-status,
+  .muted, .section-index, .user-identity span, .user-quota, .user-accounts, .user-status,
+  .user-account-option, .account-identity p, .account-state, .account-tally-label,
+  .account-context p + p, .account-last-completed, .account-option span, .account-option-empty,
+  .check-label, .options label, .selection-count, .course-meta, .course-detail-button,
+  .course-detail-summary, .course-detail-item-meta, .course-detail-empty,
+  .job-course-filter > span, .job-batch-identity > span, .job-batch-row-result,
+  .archive-account-identity p, .archive-account-count, .job-state, .job-context,
+  .job-detail-label, .meta, .job-manual-task-meta, .job-courses-heading > span,
+  .job-course-number, .job-course-identity > span, .live-course-panel > .connection-status,
+  .empty-state p, .ai-channel-heading p, .ai-channel-note, .ai-provider-result,
+  .ai-vision-bench li,
+  .ai-chat-item > header, .ai-chat-badge, .ai-chat-meta, .ai-chat-failure,
+  .ai-chat-item summary, .image-row-meta, .image-state, .image-row-answer, .image-quality,
+  .image-stages li span, .image-zoom-tools output, .ai-window-zoom, .ai-window-footer,
+  .pacing-zone, .pacing-window-meta, .pacing-window-state, .pacing-rest-meta,
+  .pacing-rest-countdown, .pacing-note, .pacing-tick, .pacing-gaps,
+  .workspace-footer, .workspace-footer span, .sidebar-version, .storage-indicator {
+    font-size: 12px; line-height: 1.6;
+  }
+  .overview-job-meta { font-size: 11.5px; }
+  .job-detail, .job-detail-value, .job-manual-task-title, .course-detail-item-title,
+  .bank-row-answer, .job-course-identity > strong, .job-progress-video, .error, .empty-state h3,
+  .job-manual-review h3, .ai-chat-item pre { font-size: 13px; line-height: 1.65; }
+  .resource-disk-detail { font-size: 12px !important; }
+  .service-health-copy h3 { font-size: 13px; }
+  .job-manual-review h3 { font-weight: 600; }
+
+  /* ---- 对比度：手机常在户外看，桌面版的浅灰小字会糊成一片，统一提到 AA ---- */
+  .eyebrow, .eyebrow > span:first-child, .metric-label, .metric-note, .overview-toolbar p,
+  .overview-jobs-heading p, .service-health-copy p, .health-state, .overview-job-context,
+  .overview-job-activity, .overview-job-meta, .job-context, .job-detail-label, .job-detail-value,
+  .meta, .muted, .count, .sync-label, .connection-status, .workspace-footer, .workspace-footer span,
+  .sidebar-version, .storage-indicator, .nav-caption, .session-user > span,
+  .course-meta, .course-detail-summary, .course-detail-item-meta, .course-detail-empty,
+  .account-identity p, .account-last-completed, .account-context p + p, .account-option-empty,
+  .user-quota, .user-accounts, .user-identity span, .bank-row-meta, .bank-type,
+  .bank-overview-values span, .job-course-identity > span, .job-courses-heading > span,
+  .job-course-number, .job-manual-task-meta, .selection-count, .archive-account-identity p,
+  .empty-state p, .empty-state h3, .ai-chat-meta, .ai-chat-failure, .ai-channel-note,
+  .resource-data-location code, .pacing-tick, .pacing-note { color: #55655c; }
+  .resource-facts dt, .resource-facts dd, .resource-facts strong { color: #45564d; }
+  .resource-disk-detail { color: #55655c !important; }
+  .resource-ring[data-state="unknown"] strong { color: #5f7066; }
+  .state-running, .state-succeeded { color: #0d6b4d; }
+  .state-starting, .state-queued { color: #2f5da0; }
+  .state-paused, .state-retry_wait { color: #7b5a12; }
+  .state-failed, .state-needs_attention { color: #a42f3c; }
+  .ai-cached, .ai-answered { color: #0d6b4d; }
+  .ai-queued, .ai-running, .ai-checking_cache, .ai-retrying { color: #7b5a12; }
+}
+
+/* ============================================================== 平板 641–900px */
+@media (min-width: 641px) and (max-width: 900px) {
+  :root { --topbar-height: calc(60px + env(safe-area-inset-top, 0px)); }
+  main { padding: calc(var(--topbar-height) + 20px) 20px 0; }
+  .job-grid,
+  .overview-jobs { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+  .summary-metric strong { font-size: 28px; }
+  .job-heading h2, li.job h2 { font-size: 15px; }
+  li.job, #list > li { border-radius: 12px; }
+}
+
+/* ================================================================= 手机 <=640px */
+@media (max-width: 640px) {
+  :root {
+    --topbar-height: calc(58px + env(safe-area-inset-top, 0px));
+    --mobile-nav-height: 64px;
+    --radius-card: 14px;
+    --shadow-card: 0 1px 2px #16261e0d, 0 6px 18px -12px #16261e26;
+  }
+  body {
+    padding-bottom: calc(var(--mobile-nav-height) + env(safe-area-inset-bottom, 0px));
+  }
+  button { border-radius: 10px; }
+  button.ghost:not(:disabled):active { background: #eef3f0; filter: none; }
+
+  /* ---- 顶栏：只留菜单、品牌、服务切换；账号操作下沉到抽屉 ---- */
+  .topbar { padding-inline: 12px; gap: 10px; box-shadow: 0 1px 0 #16261e0a; }
+  .brand { gap: 7px; font-size: 17px; }
+  .brand img { width: 28px; height: 28px; }
+  .global-nav { margin-left: auto; gap: 14px; }
+  .global-nav button { min-height: 44px; font-size: 13px; }
+  .session-user > span, #change-password, #logout { display: none; }
+  .sidebar-session { display: grid; }
+
+  /* ---- 触摸目标再放大一档（手机单手持握） ---- */
+  button, button.compact, .job .actions button, #list .actions button { min-height: 44px; }
+  button.icon-button, button.icon-button.compact { width: 44px; height: 44px; flex-basis: 44px; }
+  input, select, textarea { min-height: 44px; font-size: 16px; }
+  input[type="checkbox"] { width: 20px; height: 20px; min-height: 20px; flex-basis: 20px; }
+  .segmented button { min-height: 40px; font-size: 13px; padding-inline: 4px; }
+
+  /* ---- 内容区节奏 ---- */
+  main { padding: calc(var(--topbar-height) + 16px) 15px 0; }
+  .workspace-header { min-height: 0; margin-bottom: 16px; gap: 10px; }
+  .eyebrow { font-size: 12px; }
+  h1 { font-size: 22px; font-weight: 650; letter-spacing: -0.2px; }
+  h2 { font-size: 15px; }
+  h3 { font-size: 14px; }
+  li.job h2, #list h2, .job-heading h2 { font-size: 15px; }
+  .overview-job-heading h3 { font-size: 14px; }
+  .summary-metric strong { font-size: 26px; }
+  .account-tally strong, .bank-summary strong { font-size: 21px; }
+  .workspace-footer { padding-bottom: 18px; }
+
+  /* ---- 卡片：更柔和的圆角与阴影，更松的内边距 ---- */
+  ul { gap: 12px; }
+  .job-grid { gap: 12px; }
+  li.job, #list > li, .account-card, .overview-job, .bank-row, .user-card,
+  .pacing-card, .pacing-rest, .note-editor, .note-item {
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-card);
+  }
+  li.job, #list > li { padding: 16px; gap: 12px; }
+  li.job[data-status="running"], .account-card[data-state="studying"] { padding-top: 15px; }
+  .overview-job, .account-card, .bank-row { padding: 16px; }
+  .job-details { gap: 9px; padding-block: 12px 6px; }
+  .job-detail { grid-template-columns: 88px minmax(0, 1fr); gap: 8px; align-items: baseline; }
+  .job-detail-label { color: #55655c; }
+  .job-question { max-height: 9em; }
+  .job-progress-visual { grid-template-columns: minmax(0, 1fr) 76px; gap: 12px; padding: 14px; }
+  .job-progress-overall { width: 72px; }
+  .job-progress-overall strong { font-size: 16px; }
+  .job-progress-overall span { font-size: 10px; }
+  .job-progress-eyebrow, .job-progress-context, .job-progress-time { font-size: 12px; }
+  .job-progress-percent { font-size: 22px; }
+
+  /* ---- 状态胶囊、进度条、分段筛选 ---- */
+  .job-state, .account-state, .image-state, .ai-chat-badge {
+    padding: 4px 10px; border-radius: 999px; font-weight: 600;
+  }
+  progress { height: 7px; border-radius: 999px; }
+  progress::-webkit-progress-bar, progress::-webkit-progress-value,
+  progress::-moz-progress-bar { border-radius: 999px; }
+  .segmented { padding: 4px; gap: 3px; border-radius: 12px; background: #e7ece9; }
+  .segmented button { border-radius: 9px; }
+  .segmented button[aria-pressed="true"] { box-shadow: 0 1px 4px #263d2b1a; font-weight: 600; }
+  .search-field input { min-height: 44px; }
+  .search-field svg { top: 15px; }
+
+  /* ---- 任务筛选条吸顶，滚动时也能切换分类 ---- */
+  .jobs-toolbar {
+    position: sticky; top: var(--topbar-height); z-index: 9;
+    margin: 0 -15px 4px; padding: 10px 15px;
+    background: #f6f8f7f2; backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--line);
+  }
+  .jobs-toolbar + * { margin-top: 8px; }
+
+  /* ---- 任务操作按钮两列排布 ---- */
+  .job > .actions, #list > li > .actions {
+    display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px;
+  }
+  .job .actions button, #list .actions button { font-size: 13px; padding-inline: 8px; }
+
+  /* ---- 概览指标与服务状态 ---- */
+  .summary-band { row-gap: 16px; padding-block: 16px 18px; }
+  .summary-metric { padding-inline: 14px; gap: 4px; }
+  .service-health-row { padding: 15px 14px; }
+  .service-health-copy h3 { font-size: 14px; }
+  .service-health-icon { width: 36px; height: 36px; }
+
+  /* ---- 弹窗改为底部抽屉 ---- */
+  dialog.bank-dialog {
+    inset: auto 0 0; margin: 0; width: 100%; max-width: none;
+    max-height: 92dvh; border: 0; border-radius: 20px 20px 0 0;
+    padding: 18px 16px calc(18px + env(safe-area-inset-bottom, 0px));
+    box-shadow: 0 -10px 34px #16261e2e;
+  }
+  dialog.bank-dialog[open] { animation: sheet-rise 0.18s ease-out; }
+  dialog.bank-dialog::backdrop { background: #0f1f1733; backdrop-filter: blur(2px); }
+  dialog.bank-dialog > header { position: sticky; top: 0; z-index: 2; background: #fff; }
+  .job-dialog, .job-batch-dialog { padding: 0; }
+  .job-dialog-body { padding-top: 12px; }
+  .job-dialog-footer, .job-batch-selection {
+    position: sticky; bottom: 0; z-index: 2; background: #fff;
+    box-shadow: 0 -1px 0 var(--line);
+  }
+}
+
+@keyframes sheet-rise {
+  from { transform: translateY(14px); opacity: 0.6; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  dialog.bank-dialog[open] { animation: none; }
+  .mobile-nav button:active { transform: none; }
+}
+
+/* ============================================ 手机底部快捷导航 (<=640px) */
+.mobile-nav { display: none; }
+
+@media (max-width: 640px) {
+  .mobile-nav {
+    position: fixed; inset: auto 0 0 0; z-index: 20;
+    display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr);
+    /* 高度与 body 预留的 --mobile-nav-height 严格相等，内容永远不会被导航压住 */
+    height: calc(var(--mobile-nav-height) + env(safe-area-inset-bottom, 0px));
+    gap: 2px; padding: 6px 8px calc(6px + env(safe-area-inset-bottom, 0px));
+    background: #fffffff5; backdrop-filter: blur(12px);
+    border-top: 1px solid var(--line); box-shadow: 0 -3px 16px #16261e12;
+  }
+  .mobile-nav button {
+    display: grid; justify-items: center; align-content: center; gap: 3px;
+    min-height: 0; height: 100%; padding: 4px 2px; border: 0;
+    background: transparent; color: #77857c; font-size: 12px; font-weight: 550;
+  }
+  .mobile-nav button svg { width: 21px; height: 21px; }
+  .mobile-nav button[aria-pressed="true"] { color: var(--accent); background: var(--accent-soft); }
+  .mobile-nav button:active { transform: scale(0.97); }
+}
+
+/* 抽屉里的账号操作（手机上顶栏不再放这两个按钮） */
+.sidebar-session { display: none; gap: 8px; padding: 14px 10px 0; border-top: 1px solid var(--line); }
+.sidebar-session span { overflow: hidden; color: var(--muted); font-size: 12px; text-overflow: ellipsis; white-space: nowrap; }
+.sidebar-session .actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+
+@media (max-width: 640px) { .sidebar-session { display: grid; } }
